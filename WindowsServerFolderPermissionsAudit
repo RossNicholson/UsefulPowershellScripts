@@ -1,0 +1,34 @@
+# Set the share path
+$sharePath = "\\server\share"
+
+# Get the top-level folder on the share
+$folder = Get-Item $sharePath
+
+# Get all subfolders of the top-level folder
+$subfolders = Get-ChildItem $folder -Recurse
+
+# Add the top-level folder to the list of subfolders
+$folders = $folder + $subfolders
+
+# Loop through each folder
+foreach ($folder in $folders) {
+
+    # Get the access control list (ACL) for the folder
+    $acl = Get-Acl -Path $folder.FullName
+
+    # Loop through each access control entry (ACE) in the ACL
+    foreach ($ace in $acl.Access) {
+
+        # Create an object with the folder path, user or group name, and access rights
+        $output = New-Object -TypeName PSObject
+        $output | Add-Member -MemberType NoteProperty -Name "Folder" -Value $folder.FullName
+        $output | Add-Member -MemberType NoteProperty -Name "User or Group" -Value $ace.IdentityReference
+        $output | Add-Member -MemberType NoteProperty -Name "Access Rights" -Value $ace.FileSystemRights
+
+        # Add the object to the list of output objects
+        $outputList += $output
+    }
+}
+
+# Convert the output objects to HTML and save to a file
+$outputList | ConvertTo-Html | Out-File -FilePath "C:\Scripts\FolderPermissions.html"
