@@ -1,0 +1,52 @@
+# Create a resource group
+$resourceGroupName = "my-resource-group"
+New-AzResourceGroup -Name $resourceGroupName -Location "UK South"
+
+# Create a virtual network
+$virtualNetworkName = "my-vnet"
+$addressPrefix = "10.0.0.0/16"
+$subnetName = "my-subnet"
+$subnetPrefix = "10.0.0.0/24"
+New-AzVirtualNetwork `
+    -Name $virtualNetworkName `
+    -ResourceGroupName $resourceGroupName `
+    -Location "UK South" `
+    -AddressPrefix $addressPrefix `
+    -Subnet $subnetName, $subnetPrefix
+
+# Create a public IP address
+$publicIpAddressName = "my-public-ip"
+$allocationMethod = "Dynamic"
+$publicIpAddress = New-AzPublicIpAddress `
+    -Name $publicIpAddressName `
+    -ResourceGroupName $resourceGroupName `
+    -Location "UK South" `
+    -AllocationMethod $allocationMethod
+
+# Create an Azure Network Interface
+$networkInterfaceName = "my-nic"
+$networkInterface = New-AzNetworkInterface `
+    -Name $networkInterfaceName `
+    -ResourceGroupName $resourceGroupName `
+    -Location "UK South" `
+    -SubnetId $virtualNetwork.Subnets[0].Id `
+    -PublicIpAddressId $publicIpAddress.Id
+
+# Create a virtual machine
+$virtualMachineName = "my-vm"
+$vmSize = "Standard_B1s"
+$virtualMachine = New-AzVM `
+    -Name $virtualMachineName `
+    -ResourceGroupName $resourceGroupName `
+    -Location "UK South" `
+    -VirtualNetworkName $virtualNetworkName `
+    -SubnetName $subnetName `
+    -PublicIpAddressName $publicIpAddressName `
+    -Size $vmSize `
+    -OsDiskSizeInGB 128 `
+    -Image Win2019Datacenter `
+    -MemoryInGB 8 `
+    -NetworkInterfaceId $networkInterface.Id
+
+# Start the virtual machine
+Start-AzVM -Name $virtualMachineName -ResourceGroupName $resourceGroupName
