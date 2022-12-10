@@ -1,0 +1,8 @@
+# Import the AzureRM module
+Import-Module AzureRM
+
+# Connect to Azure
+Connect-AzureRMAccount
+
+# Sign in to Azure
+Add-AzureRMAccount
