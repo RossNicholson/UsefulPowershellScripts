@@ -1,0 +1,48 @@
+# Import the module that contains the Get-WinEvent cmdlet
+Import-Module -Name Microsoft.PowerShell.Management
+
+# Get the current date and time
+$now = Get-Date
+
+# Set the start time to 24 hours ago
+$startTime = $now.AddHours(-24)
+
+# Get all logon/logoff events from the security log in the last 24 hours
+$events = Get-WinEvent -FilterHashtable @{
+  LogName = 'Security';
+  ID = 4624,4634;
+  StartTime = $startTime;
+}
+
+# Create a string to hold the HTML output
+$htmlOutput = "<html><body><h1>User Login/Logoff Events</h1><table><tr><th>Username</th><th>Type</th><th>Time</th></tr>"
+
+# Loop through each event and add a row to the HTML table
+foreach ($event in $events) {
+  # Get the event properties
+  $properties = $event.Properties
+
+  # Get the username and time of the event
+  $username = $properties[5].Value
+  $time = $properties[1].Value
+
+  # Determine if the event was a logon or logoff
+  if ($event.Id -eq 4624) {
+    $type = 'Logon'
+  }
+  else {
+    $type = 'Logoff'
+  }
+
+  # Add a row to the HTML table
+  $htmlOutput += "<tr><td>$username</td><td>$type</td><td>$time</td></tr>"
+}
+
+# Close the HTML table and add the closing tags
+$htmlOutput += "</table></body></html>"
+
+# Prompt the user for a filename
+$filename = Read-Host "Enter the name of the HTML file to create (e.g. logon_events.html)"
+
+# Save the HTML output to the specified file
+$htmlOutput | Out-File $filename
