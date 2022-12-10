@@ -1,0 +1,12 @@
+# First, check if the PowerShell module for Office365 is installed. If not, install it
+if (!(Get-Module -Name MSOnline)) {
+  Install-Module -Name MSOnline
+}
+
+# Import the module
+Import-Module MSOnline
+
+# Connect to Office365 using a username and password
+Connect-MsolService -Credential (Get-Credential)
+
+# If the connection is successful, a message will be displayed indicating that you are connected
