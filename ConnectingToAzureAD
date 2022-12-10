@@ -1,0 +1,11 @@
+# Install Azure AD PowerShell module
+Install-Module -Name AzureAD
+
+# Connect to Azure AD
+Connect-AzureAD
+
+# Prompt for Azure AD credentials
+$cred = Get-Credential
+
+# Sign in to Azure AD using the provided credentials
+Connect-AzureAD -Credential $cred
