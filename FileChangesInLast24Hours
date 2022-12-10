@@ -1,0 +1,14 @@
+# Set the path to the shared directory
+$dirPath = "\\server\sharedfolder"
+
+# Get the current time and subtract 24 hours
+$time = (Get-Date).AddHours(-24)
+
+# Get a list of all files in the shared directory that have been modified since the specified time
+$files = Get-ChildItem $dirPath | Where-Object {$_.LastWriteTime -ge $time}
+
+# Loop through each file and display its name, last modified time, and modifying user
+foreach ($file in $files) {
+    $user = (Get-Acl $file.FullName).Owner
+    Write-Output "File: $($file.Name) Modified: $($file.LastWriteTime) By: $user"
+}
