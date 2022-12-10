@@ -1,0 +1,12 @@
+# Replace with your own credentials
+$username = "user@domain.com"
+$password = "password"
+
+# Load the Exchange Online PowerShell module
+Import-Module -Name ExchangeOnlineManagement
+
+# Connect to Exchange Online
+$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $username, $(ConvertTo-SecureString -String $password -AsPlainText -Force)
+Connect-ExchangeOnline -Credential $credential
+
+# Your Exchange Online cmdlets can now be run here
