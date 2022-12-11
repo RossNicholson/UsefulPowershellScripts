@@ -1,0 +1,21 @@
+# Import the required Exchange module
+Import-Module Exchange
+
+# Retrieve a list of all mailboxes on the server
+$mailboxes = Get-Mailbox
+
+# Initialize a variable to store the HTML content
+$html = ""
+
+# Loop through each mailbox
+foreach ($mailbox in $mailboxes) {
+  # Retrieve the mailbox size and store it in a variable
+  $size = (Get-MailboxStatistics $mailbox).TotalItemSize.Value.ToGB()
+
+  # Add a new row to the HTML table with the mailbox name and size
+  $html += "<tr><td>$($mailbox.Name)</td><td>$($size) GB</td></tr>"
+}
+
+# Create the HTML file and write the table to it
+$html = "<html><body><table><tr><th>Mailbox</th><th>Size</th></tr>$html</table></body></html>"
+Out-File -FilePath "MailboxSizes.html" -InputObject $html
