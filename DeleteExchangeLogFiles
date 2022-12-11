@@ -1,0 +1,19 @@
+# Set the path to the log files directory
+$logsDirectory = "C:\Exchange\Logs"
+
+# Set the maximum age of the log files to keep in days
+$maxLogFileAge = 30
+
+# Get a list of log files in the log files directory
+$logFiles = Get-ChildItem $logsDirectory
+
+# Loop through each log file
+foreach ($logFile in $logFiles)
+{
+    # Check if the log file is older than the maximum age
+    if ($logFile.LastWriteTime -lt (Get-Date).AddDays(-$maxLogFileAge))
+    {
+        # Delete the log file if it is older than the maximum age
+        Remove-Item $logFile.FullName
+    }
+}
